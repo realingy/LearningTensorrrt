@@ -13,28 +13,32 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/workspace)
 
 # 配置python
 set(HAS_PYTHON ON)
-set(PythonRoot "/opt/Python-3.10.13")
-set(PythonName "python3.10")
+set(PythonRoot  "/home/yxm/anaconda3")
+set(PythonName  "python3.10")
 
 # 如果你是不同显卡，请设置为显卡对应的号码参考这里：https://developer.nvidia.com/zh-cn/cuda-gpus#compute
-#set(CUDA_GEN_CODE "-gencode=arch=compute_75,code=sm_75")
+set(CUDA_GEN_CODE "-gencode=arch=compute_75,code=sm_75")
 
 # 如果你的opencv找不到，可以自己指定目录
 # set(OpenCV_DIR   "/datav/lean/opencv-4.2.0/lib/cmake/opencv4/")
 
 # opencv库查询
-set(OpenCV_Root /thirdparty/opencv401)
+# set(OpenCV_Root  /usr/local/include/opencv4)
+set(OpenCV_Include /usr/local/include/opencv4)
 set(OpenCV_DIR /usr/local/lib)
 find_package(OpenCV REQUIRED)
+# find_package(OpenCV)
+
+# message( "OpenCV Libs: " ${OpenCV_LIBS})
 
 # 包含目录
 # include_directories(${OpenCV_Root}/include)
 # include_directories(${OpenCV_Root}/include/opencv)
 # include_directories(${OpenCV_Root}/include/opencv2)
 
-set(CUDA_TOOLKIT_ROOT_DIR     "/datav/lean/cuda-11.2")
-set(CUDNN_DIR    "/datav/lean/cudnn8.2.4.15-cuda11.4")
-set(TENSORRT_DIR "/datav/lean/TensorRT-8.2.3.0-cuda11.4-cudnn8.2")
+set(CUDA_TOOLKIT_ROOT_DIR     "/usr/local/cuda-11.0")
+set(CUDNN_DIR    "/usr/local/cudnn-8.9.5.29-cuda11.8")
+set(TENSORRT_DIR "/thirdparty/TensorRT-8.6.1.6")
 
 # set(CUDA_TOOLKIT_ROOT_DIR     "/data/sxai/lean/cuda-10.2")
 # set(CUDNN_DIR    "/data/sxai/lean/cudnn7.6.5.32-cuda10.2")
@@ -45,11 +49,9 @@ set(TENSORRT_DIR "/datav/lean/TensorRT-8.2.3.0-cuda11.4-cudnn8.2")
 # set(TENSORRT_DIR "/data/sxai/lean/TensorRT-7.2.1.6")
 
 # 因为protobuf，需要用特定版本，所以这里指定路径
-set(PROTOBUF_DIR "/datav/lean/protobuf3.11.4")
-
+set(PROTOBUF_DIR "/thirdparty/protobuf-3.11")
 
 find_package(CUDA REQUIRED)
-# find_package(OpenCV)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
@@ -60,9 +62,7 @@ include_directories(
     ${PROTOBUF_DIR}/include
     ${TENSORRT_DIR}/include
     ${CUDNN_DIR}/include
-    ${OpenCV_Root}/include
-    ${OpenCV_Root}/include/opencv
-    ${OpenCV_Root}/include/opencv2
+    ${OpenCV_Include}
 )
 
 # 切记，protobuf的lib目录一定要比tensorRT目录前面，因为tensorRTlib下带有protobuf的so文件
@@ -76,9 +76,9 @@ link_directories(
 
 if("${HAS_PYTHON}" STREQUAL "ON")
     message("Usage Python ${PythonRoot}")
-    include_directories(${PythonRoot}/Include)
-    # link_directories(${PythonRoot}/lib)
-    link_directories(${PythonRoot}/Python)
+    include_directories(${PythonRoot}/include)
+    include_directories(${PythonRoot}/include/python3.10)
+    link_directories(${PythonRoot}/lib)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAS_PYTHON")
 endif()
 
